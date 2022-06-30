@@ -48,6 +48,9 @@ private:
 };
 class sem{
 public:
+sem(){
+        sem_init(&s_sem,0,0);
+    }
     sem(int num){
         sem_init(&s_sem,0,num);
     }

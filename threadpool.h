@@ -25,14 +25,15 @@ private:
     bool stop;
 };
 template <typename T>
-pthreadpool<T>::pthreadpool(int pthread_num,int request_num)
+pthreadpool<T>::pthreadpool(int pthreadnum,int request_num)
 {
-    pthreadnum=pthread_num;
+    pthread_num=pthreadnum;
     request_maxnum=request_num;
     stop=false;
-    pthreads=new pthread_t[pthreadnum];
-    for(int i=0;i<pthreadnum;i++)
+    pthreads=new pthread_t[pthread_num];
+    for(int i=0;i<pthread_num;i++)
     {
+        printf("create pthread %d\n",i);
         pthread_create(&pthreads[i],NULL,work,this);
         pthread_detach(pthreads[i]);
     }
@@ -46,7 +47,7 @@ pthreadpool<T>::~pthreadpool()
 template<typename T>
 void* pthreadpool<T>::work(void * agr)
 {
-    pthreadpoll * pthread=(struct pthreadpoll *)agr;
+    pthreadpool * pthread=(pthreadpool *)agr;
     pthread->run();
     return NULL;
 }
@@ -75,7 +76,7 @@ int pthreadpool<T>::append(T* add)
     }
     mutex.lock();
     m_request.sempost();
-    requestlist.push_back(T);
+    requestlist.push_back(add);
     mutex.unlock();
     return 1;
 }
